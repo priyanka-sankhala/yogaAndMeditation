@@ -1,0 +1,52 @@
+export class AppError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+    public statusCode: number = 500,
+    public details?: unknown
+  ) {
+    super(message);
+    this.name = 'AppError';
+  }
+}
+
+export function isAppError(error: unknown): error is AppError {
+  return error instanceof AppError;
+}
+
+export const errorCodes = {
+  // Auth
+  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
+  EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+  INVALID_TOKEN: 'INVALID_TOKEN',
+
+  // Validation
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INVALID_INPUT: 'INVALID_INPUT',
+
+  // Subscription
+  SUBSCRIPTION_NOT_FOUND: 'SUBSCRIPTION_NOT_FOUND',
+  SUBSCRIPTION_EXPIRED: 'SUBSCRIPTION_EXPIRED',
+  PLAN_NOT_FOUND: 'PLAN_NOT_FOUND',
+
+  // Payment
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  PAYMENT_NOT_FOUND: 'PAYMENT_NOT_FOUND',
+  INSUFFICIENT_BALANCE: 'INSUFFICIENT_BALANCE',
+
+  // Content
+  CONTENT_NOT_FOUND: 'CONTENT_NOT_FOUND',
+  CONTENT_NOT_ACCESSIBLE: 'CONTENT_NOT_ACCESSIBLE',
+  UPLOAD_FAILED: 'UPLOAD_FAILED',
+
+  // Server
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  NOT_FOUND: 'NOT_FOUND',
+  METHOD_NOT_ALLOWED: 'METHOD_NOT_ALLOWED',
+  RATE_LIMITED: 'RATE_LIMITED',
+};
