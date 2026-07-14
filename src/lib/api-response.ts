@@ -1,8 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { AppError, errorCodes } from './errors';
 
-export function handleError(error: unknown) {
-  console.error('API Error:', error);
+export function successResponse(data: any, status: number = 200) {
+  return NextResponse.json(
+    {
+      success: true,
+      data,
+    },
+    { status }
+  );
+}
+
+export function handleError(error: any) {
+  console.error('[API Error]', error);
 
   if (error instanceof AppError) {
     return NextResponse.json(
@@ -18,47 +28,15 @@ export function handleError(error: unknown) {
     );
   }
 
-  if (error instanceof Error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: errorCodes.INTERNAL_ERROR,
-          message: error.message,
-        },
-      },
-      { status: 500 }
-    );
-  }
-
+  // Default error response
   return NextResponse.json(
     {
       success: false,
       error: {
-        code: errorCodes.INTERNAL_ERROR,
-        message: 'An unexpected error occurred',
+        code: errorCodes.INTERNAL_SERVER_ERROR,
+        message: error instanceof Error ? error.message : 'An unexpected error occurred',
       },
     },
     { status: 500 }
   );
-}
-
-export function successResponse<T>(data: T, statusCode = 200) {
-  return NextResponse.json(
-    {
-      success: true,
-      data,
-    },
-    { status: statusCode }
-  );
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: unknown;
-  };
 }

@@ -1,37 +1,28 @@
-import { jwtVerify, SignJWT } from 'jose';
+import jwt from 'jsonwebtoken';
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
-);
+const secret = process.env.JWT_SECRET || 'your-secret-key';
 
 export interface TokenPayload {
   userId: string;
   email: string;
   role?: string;
-  iat?: number;
-  exp?: number;
 }
 
 export async function createToken(
-  payload: Omit<TokenPayload, 'iat' | 'exp'>,
+  payload: TokenPayload,
   expiresIn: string = '24h'
 ): Promise<string> {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(expiresIn)
-    .sign(secret);
+  return jwt.sign(payload, secret, { expiresIn });
 }
 
-export async function verifyToken(token: string): Promise<TokenPayload | null> {
+export async function verifyToken(token: string): Promise<TokenPayload> {
+  return jwt.verify(token, secret) as TokenPayload;
+}
+
+export async function decodeToken(token: string): Promise<TokenPayload | null> {
   try {
-    const verified = await jwtVerify(token, secret);
-    return verified.payload as TokenPayload;
+    return jwt.decode(token) as TokenPayload;
   } catch (error) {
     return null;
   }
-}
-
-export async function createRefreshToken(userId: string): Promise<string> {
-  return createToken({ userId, email: '' }, '7d');
 }
